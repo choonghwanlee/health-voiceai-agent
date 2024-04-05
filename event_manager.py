@@ -32,7 +32,7 @@ class EventsManager(events_manager.EventsManager):
             }
 
             # URL of the webhook endpoint you want to send the data to
-            webhook_url = os.environ.get("TRANSCRIPT_CALLBACK_URL")
+            webhook_url = os.getenv("TRANSCRIPT_CALLBACK_URL")
 
             # Make the async HTTP POST request
             async with httpx.AsyncClient() as client:

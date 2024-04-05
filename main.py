@@ -26,11 +26,11 @@ app = FastAPI(docs_url=None)
 CONFIG_MANAGER = InMemoryConfigManager()
 
 TWILIO_CONFIG = TwilioConfig(
-  account_sid=os.get("TWILIO_ACCOUNT_SID"),
-  auth_token=os.get("TWILIO_AUTH_TOKEN"), 
+  account_sid=os.getenv("TWILIO_ACCOUNT_SID"),
+  auth_token=os.getenv("TWILIO_AUTH_TOKEN"), 
 )
 
-BASE_URL = os.get("BASE_URL")
+BASE_URL = os.getenv("BASE_URL")
 
 # Get the instructions for the assistant
 def get_assistant_instructions():
