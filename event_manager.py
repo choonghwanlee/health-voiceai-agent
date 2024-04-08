@@ -46,10 +46,14 @@ class EventsManager(events_manager.EventsManager):
         elif event.type == EventType.TRANSCRIPT: 
             ## TO-DO: received partial transcript. analyze to ensure all information is collected
             transcript_event = typing.cast(TranscriptEvent, event)
+            print(transcript_event)
+            print(transcript_event.sender)
             if transcript_event.sender == Sender.HUMAN: 
                 text = transcript_event.to_string()
+                print(text)
             None
         elif event.type == EventType.PHONE_CALL_ENDED:
             ## TO-DO: trigger endpoint for sending text message
+            print('phone call ended, do something')
             None
 
