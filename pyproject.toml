@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "assort-health-take-home"
+version = "0.1.0"
+description = "Voice AI Agent"
+authors = ["Jason Lee <cl491@duke.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+redis = "^4.5.4"
+twilio = "^9.0.4"
+vonage = "^3.7.1"
+pyngrok = "^6.0.0"
+python-dotenv = "^1.0.1"
+fastapi = "^0.100.1"
+vocode = "0.1.111"
+elevenlabs = "^0.2.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

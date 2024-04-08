@@ -20,7 +20,6 @@ class EventsManager(events_manager.EventsManager):
             transcript_complete_event = typing.cast(TranscriptCompleteEvent, event)
             add_transcript(
                 transcript_complete_event.conversation_id,
-                1,  # demo user id
                 transcript_complete_event.transcript.to_string(),
             )
             # Prepare the data to be sent
