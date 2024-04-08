@@ -37,7 +37,7 @@ def get_assistant_instructions():
   with open('instructions.txt', 'r') as file:
     return file.read()
 
-DEEPGRAM_CONFIG = DeepgramTranscriberConfig.from_telephone_input_device(endpointing_config=PunctuationEndpointingConfig())
+DEEPGRAM_CONFIG = DeepgramTranscriberConfig.from_telephone_input_device(endpointing_config=PunctuationEndpointingConfig(time_cutoff_seconds=1))
 
 AGENT_CONFIG = ChatGPTAgentConfig(
   initial_message=BaseMessage(text="Hello! This is Charlie, an AI assistant to help you book your next appointment. To start, please tell me your name and date of birth"),
