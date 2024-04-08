@@ -4,8 +4,8 @@ from typing import Optional
 
 # Import all required utils
 from call_transcript_utils import add_transcript
-from vocode.streaming.models.events import Event, EventType
-from vocode.streaming.models.transcript import TranscriptCompleteEvent
+from vocode.streaming.models.events import Event, EventType, Sender, ActionEvent 
+from vocode.streaming.models.transcript import TranscriptEvent, TranscriptCompleteEvent
 from vocode.streaming.utils import events_manager
 
 import httpx
@@ -13,7 +13,7 @@ import httpx
 class EventsManager(events_manager.EventsManager):
 
     def __init__(self):
-        super().__init__(subscriptions=[EventType.TRANSCRIPT_COMPLETE, EventType.PHONE_CALL_ENDED,])
+        super().__init__(subscriptions=[EventType.TRANSCRIPT_COMPLETE, EventType.TRANSCRIPT, EventType.PHONE_CALL_ENDED])
 
     async def handle_event(self, event: Event):
         if event.type == EventType.TRANSCRIPT_COMPLETE:
@@ -23,7 +23,6 @@ class EventsManager(events_manager.EventsManager):
                 1,  # demo user id
                 transcript_complete_event.transcript.to_string(),
             )
-
             # Prepare the data to be sent
             data = {
                 "conversation_id": transcript_complete_event.conversation_id,
@@ -43,6 +42,13 @@ class EventsManager(events_manager.EventsManager):
                     print("Transcript sent successfully.")
                 else:
                     print("Failed to send transcript.")
+        
+        elif event.type == EventType.TRANSCRIPT: 
+            ## TO-DO: received partial transcript. analyze to ensure all information is collected
+            transcript_event = typing.cast(TranscriptEvent, event)
+            if transcript_event.sender == Sender.HUMAN: 
+                text = transcript_event.to_string()
+            None
         elif event.type == EventType.PHONE_CALL_ENDED:
             ## TO-DO: trigger endpoint for sending text message
             None

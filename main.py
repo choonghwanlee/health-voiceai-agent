@@ -63,10 +63,8 @@ telephony_server = TelephonyServer(
         )
     ],
     events_manager=EventsManager(),
+    agent_factory=None,
     logger=logger,
 )
 
 app.include_router(telephony_server.get_router())
-
-
-
