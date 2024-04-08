@@ -30,18 +30,18 @@ class EventsManager(events_manager.EventsManager):
                 "transcript": transcript_complete_event.transcript.to_string()
             }
 
-            # URL of the webhook endpoint you want to send the data to
-            webhook_url = os.getenv("TRANSCRIPT_CALLBACK_URL")
+            # # URL of the webhook endpoint you want to send the data to
+            # webhook_url = os.getenv("TRANSCRIPT_CALLBACK_URL")
 
-            # Make the async HTTP POST request
-            async with httpx.AsyncClient() as client:
-                response = await client.post(webhook_url, json=data)
+            # # Make the async HTTP POST request
+            # async with httpx.AsyncClient() as client:
+            #     response = await client.post(webhook_url, json=data)
 
-                # Handle the response as needed (e.g., check for success or failure)
-                if response.status_code == 200:
-                    print("Transcript sent successfully.")
-                else:
-                    print("Failed to send transcript.")
+            #     # Handle the response as needed (e.g., check for success or failure)
+            #     if response.status_code == 200:
+            #         print("Transcript sent successfully.")
+            #     else:
+            #         print("Failed to send transcript.")
         
         elif event.type == EventType.TRANSCRIPT: 
             ## TO-DO: received partial transcript. analyze to ensure all information is collected
