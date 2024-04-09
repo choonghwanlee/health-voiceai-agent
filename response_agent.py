@@ -36,6 +36,9 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
         self.prompt_template = (
             f"{agent_config.prompt_preamble}\n\n{self.DEFAULT_PROMPT_TEMPLATE}"
         ) ## add prompt preamble 
+        self.check_template = (
+            f"{self.RESPONSE_CHECK_TEMPLATE}"
+        ) ## initialize response check template
         self.initial_bot_message = (
             agent_config.initial_message.text if agent_config.initial_message else None
         ) ## init initial message 
@@ -79,17 +82,20 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
         history = "\n".join(self.memory[-5:]) ## use last 5 entries to memory
         return self.prompt_template.format(history=history, human_input=human_input)
 
+    def create_check(self, human_input):
+        ## create response check to feed into LLM
+        return self.check_template.format(human_input=human_input, response_check = self.response_checks[self.num_fulfilled])
+
     def get_memory_entry(self, human_input, response):
         return f"{self.recipient}: {human_input}\n{self.sender}: {response}"
 
-    ## main function to edit!
     async def respond(
         self,
         human_input,
         conversation_id: str,
         is_interrupt: bool = False,
     ) -> Tuple[str, bool]:
-        info_fulfilled, custom_response = self.process_human_input(human_input) ## check human input for requested information 
+        info_fulfilled = self.process_human_input(human_input) ## check human input for requested information 
         if is_interrupt and self.agent_config.cut_off_response:
             cut_off_response = self.get_cut_off_response()
             self.memory.append(self.get_memory_entry(human_input, cut_off_response))
@@ -100,7 +106,7 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
             self.is_first_response = False 
             response = self.first_response
         elif info_fulfilled: ## requested information is received, we can ask the next prompt  
-            response = custom_response
+            response = self.custom_prompts[self.num_fulfilled]
         else:
             response = (
                 (
@@ -172,11 +178,21 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
         ## init custom prompts from txt file
         None
 
-    def process_human_input(self, human_input):
+    async def process_human_input(self, human_input) -> bool:
         ## process human input to determine whether information need was fulfilled
-        
+        response = (
+            (
+                await self.llm.agenerate(
+                    [self.create_check(human_input)], stop=self.stop_tokens
+                ) ## generate based on history and human input
+            )
+            .generations[0][0]
+            .text
+        )
+        if "None" in response: ## not all information is collected
+            return False
 
-        return True, None 
+        return True 
 
          
 
