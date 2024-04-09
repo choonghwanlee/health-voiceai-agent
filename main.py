@@ -40,7 +40,7 @@ def get_assistant_instructions():
 
 DEEPGRAM_CONFIG = DeepgramTranscriberConfig.from_telephone_input_device(endpointing_config=PunctuationEndpointingConfig(time_cutoff_seconds=1))
 
-AGENT_CONFIG = LLMAgentConfig(
+AGENT_CONFIG = ChatGPTAgentConfig(
   initial_message=BaseMessage(text="Hello! This is Charlie, an AI assistant to help you book your next appointment. To start, please tell me your name and date of birth"),
   prompt_preamble=get_assistant_instructions(),
   model_type= 'gpt-3.5-turbo-instruct',
@@ -65,7 +65,7 @@ telephony_server = TelephonyServer(
         )
     ],
     events_manager=EventsManager(),
-    # agent_factory= CustomLLMAgentFactory(agent_config=AGENT_CONFIG),
+    agent_factory= CustomLLMAgentFactory(agent_config=AGENT_CONFIG),
     logger=logger,
 )
 
