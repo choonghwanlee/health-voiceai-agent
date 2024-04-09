@@ -50,11 +50,10 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
             if agent_config.initial_message
             else []
         ) ## create memory
-        ## create a dictionary object to track information already gathered, init to None
-        self.fulfilled = {"Name & DOB": None, "Insurance Name & ID": None, "Referral": None, "Medical Complaint": None, 
-                          "Address": None, "Phone & Email": None, "Recommendation": None}
-        self.custom_prompts =  self.load_custom_prompts('custom_prompts.txt') ## list of custom prompts for LLMAgent
-        self.response_checks = self.load_response_checks('response_checks.txt') ## list of response checks for each requirement
+        ## create a dictionary object to track information already gathered, init to empty dict
+        self.fulfilled = {}
+        self.custom_prompts =  self.load_file('custom_prompts.txt') ## list of custom prompts for LLMAgent
+        self.response_checks = self.load_file('response_checks.txt') ## list of response checks for each requirement
         self.num_fulfilled = 0 ## keep count of number of informations items received. if == len(dict), trigger end call! 
         openai_api_key = openai_api_key or getenv("OPENAI_API_KEY")
         if not openai_api_key:
@@ -170,14 +169,12 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
             self.memory[-1] = self.get_memory_entry(human_input, response_buffer)
             yield sentence, True
 
-    def load_custom_prompts(self, file):
+    def load_file(self, filename):
         ## init custom prompts from txt file
-        None
+        with open(filename) as file:
+            file_list = [line.rstrip() for line in file]
+        return file_list
     
-    def load_response_checks(self, file):
-        ## init custom prompts from txt file
-        None
-
     async def process_human_input(self, human_input) -> bool:
         ## process human input to determine whether information need was fulfilled
         response = (
@@ -191,10 +188,9 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
         )
         if "None" in response: ## not all information is collected
             return False
-
+        self.fulfilled[self.num_fulfilled] = response
+        self.num_fulfilled += 1
         return True 
-
-         
 
     def update_last_bot_message_on_cut_off(self, message: str):
         last_message = self.memory[-1]

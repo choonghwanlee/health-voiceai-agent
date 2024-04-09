@@ -1,0 +1,7 @@
+Please begin by providing your name and date of birth!
+Thank you. Please provide your insurance payer name and payer ID. 
+If applicable, please let us know which provider you have a referral to a provider. 
+What is your main reason for visiting for an appointment today? 
+Thank you for the information. We are almost done. Before we match you to an appointment, could you provide us your address?
+What is your contact information? Either email or phone number is fine. 
+What time do you want your appointment? 
