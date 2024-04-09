@@ -1,0 +1,7 @@
+What is the name and date of birth of this speaker? Format your answer in a comma separated string, "(Name), (Date of Birth)". If there is no name or date of birth in the context, respond with the string None for the corresponding element.
+What is the insurance payer name and payer ID of this speaker? Format your answer in a comma separated string, "(Payer Name), (Payer ID)". If there is no payer name or payer ID in the context, respond with the string None for the corresponding element. 
+Which provider does the speaker have a referral to? Format your answer in a string, "(Provider Name)". If the speaker doesn't have a referral, respond with the string "No One".  
+What is the speaker's main reason for visiting? Format your answer in a string "(Main Reason)". 
+What is the speaker's address? Format your answer in a string "(Address)"
+What is the speaker's email or phone number? Format your answer in a string "(Email or phone number)"
+What time does the speaker want an appointment? Format your answer in a string "(Time for Appointment)"

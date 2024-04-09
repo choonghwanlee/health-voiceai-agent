@@ -63,6 +63,7 @@ telephony_server = TelephonyServer(
         )
     ],
     events_manager=EventsManager(),
+    agent_factory= None,
     logger=logger,
 )
 
