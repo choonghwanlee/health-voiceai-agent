@@ -3,14 +3,17 @@ from typing import AsyncGenerator, Optional, Tuple
 
 from langchain import OpenAI
 from typing import Generator
+import typing
 import logging
 
 import openai
 from vocode import getenv
+import os
 
 from vocode.streaming.agent.base_agent import BaseAgent, RespondAgent
 from vocode.streaming.agent.utils import collate_response_async, openai_get_tokens
-from vocode.streaming.models.agent import LLMAgentConfig
+from vocode.streaming.models.agent import LLMAgentConfig, AgentConfig
+from vocode.streaming.agent.factory import AgentFactory
 
 
 class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
@@ -55,10 +58,10 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
         self.custom_prompts =  self.load_file('custom_prompts.txt') ## list of custom prompts for LLMAgent
         self.response_checks = self.load_file('response_checks.txt') ## list of response checks for each requirement
         self.num_fulfilled = 0 ## keep count of number of informations items received. if == len(dict), trigger end call! 
-        openai_api_key = openai_api_key or getenv("OPENAI_API_KEY")
+        openai_api_key = openai_api_key or os.getenv("OPENAI_API_KEY")
         if not openai_api_key:
             raise ValueError("OPENAI_API_KEY must be set in environment or passed in")
-        self.llm = OpenAI(  # type: ignore
+        self.llm = ChatOpenAI(  # type: ignore
             model_name=self.agent_config.model_name, ## determine correct model name, use default for now
             temperature=self.agent_config.temperature, 
             max_tokens=self.agent_config.max_tokens,
@@ -94,7 +97,7 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
         conversation_id: str,
         is_interrupt: bool = False,
     ) -> Tuple[str, bool]:
-        info_fulfilled = self.process_human_input(human_input) ## check human input for requested information 
+        # info_fulfilled = self.process_human_input(human_input) ## check human input for requested information 
         if is_interrupt and self.agent_config.cut_off_response:
             cut_off_response = self.get_cut_off_response()
             self.memory.append(self.get_memory_entry(human_input, cut_off_response))
@@ -104,8 +107,8 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
             self.logger.debug("First response is cached")
             self.is_first_response = False 
             response = self.first_response
-        elif info_fulfilled: ## requested information is received, we can ask the next prompt  
-            response = self.custom_prompts[self.num_fulfilled]
+        # elif info_fulfilled: ## requested information is received, we can ask the next prompt  
+        #     response = self.custom_prompts[self.num_fulfilled]
         else:
             response = (
                 (
@@ -177,6 +180,7 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
     
     async def process_human_input(self, human_input) -> bool:
         ## process human input to determine whether information need was fulfilled
+        self.logger.debug("Processing human input")
         response = (
             (
                 await self.llm.agenerate(
@@ -187,7 +191,9 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
             .text
         )
         if "None" in response: ## not all information is collected
+            self.logger.debug("Request not fulfilled")
             return False
+        self.logger.debug("Request is fulfilled")
         self.fulfilled[self.num_fulfilled] = response
         self.num_fulfilled += 1
         return True 
@@ -198,3 +204,15 @@ class CustomLLMAgent(RespondAgent[LLMAgentConfig]):
             last_message.split("\n", 1)[0] + f"\n{self.sender}: {message}"
         )
         self.memory[-1] = new_last_message
+
+class CustomLLMAgentFactory(AgentFactory):
+    def __init__(self, agent_config: AgentConfig, logger: Optional[logging.Logger]):
+        self.agent_config = agent_config
+        self.logger = logger
+
+    def create_agent(self) -> RespondAgent:
+        return CustomLLMAgent(
+            agent_config=self.agent_config,
+            logger=self.logger
+        )
+        # raise Exception("Invalid agent config")

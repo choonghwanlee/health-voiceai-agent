@@ -17,6 +17,9 @@ RUN poetry install --no-dev --no-interaction --no-ansi
 COPY main.py /code/main.py
 COPY event_manager.py /code/event_manager.py
 COPY call_transcript_utils.py /code/call_transcript_utils.py
+COPY response_agent.py /code/response_agent.py
+COPY response_checks.txt /code/response_checks.txt
+COPY custom_prompts.txt /code/custom_prompts.txt
 COPY instructions.txt /code/instructions.txt
 RUN mkdir -p /code/call_transcripts
 RUN mkdir -p /code/db
