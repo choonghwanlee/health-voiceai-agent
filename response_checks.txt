@@ -6,4 +6,4 @@ Based on the referral and reason for visiting, which provider should the Human s
 What time does the Human want an appointment with their preferred provider? If there is no available time given, respond with the string "None". 
 What is the Human's personal address? If there is no address in the context, respond with the string "None".
 What is the Human's phone number? If there is no phone number in the context, respond with the string "None".
-Does the Human have any further inquiries or questions? If there are none, respond with the string "None".
+Does the Human have any further inquiries or questions? If there are none, respond with the string "Done!" Otherwise, assist the caller to the best of your ability.

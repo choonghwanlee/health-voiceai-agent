@@ -45,8 +45,8 @@ class EventsManager(events_manager.EventsManager):
             #         print("Failed to send transcript.")
         elif event.type == EventType.PHONE_CALL_ENDED:
             ## TO-DO: trigger endpoint for sending text message
-            account_sid = os.getev['TWILIO_ACCOUNT_SID']
-            auth_token = os.getev['TWILIO_AUTH_TOKEN']
+            account_sid = os.getenv['TWILIO_ACCOUNT_SID']
+            auth_token = os.getenv['TWILIO_AUTH_TOKEN']
             client = Client(account_sid, auth_token)
             if os.path.exists('results.json'):
                 with open('results.json') as json_file:
