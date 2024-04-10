@@ -7,7 +7,7 @@ import json
 # Import all required utils
 from call_transcript_utils import add_transcript
 from vocode.streaming.models.events import Event, EventType, Sender, ActionEvent 
-from vocode.streaming.models.transcript import TranscriptEvent, TranscriptCompleteEvent, Ph
+from vocode.streaming.models.transcript import TranscriptEvent, TranscriptCompleteEvent
 from vocode.streaming.utils import events_manager
 
 import httpx
