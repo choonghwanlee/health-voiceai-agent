@@ -212,7 +212,7 @@ class CustomLLMAgent(RespondAgent[ChatGPTAgentConfig]):
         if self.num_fulfilled == 9:
             with open('result.json', 'w') as fp:
                 json.dump(self.fulfilled, fp)
-            ##TO-DO: AUTOMATICALLY END CALL, TRIGGERING EVENT
+            
             ## TO-DO: HOW TO SAVE/EXPORT FULFILLED DATA <==
         return True 
 

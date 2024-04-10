@@ -3,6 +3,7 @@ import typing
 from typing import Optional
 from twilio.rest import Client
 
+import json 
 # Import all required utils
 from call_transcript_utils import add_transcript
 from vocode.streaming.models.events import Event, EventType, Sender, ActionEvent 
@@ -47,14 +48,15 @@ class EventsManager(events_manager.EventsManager):
             account_sid = os.getev['TWILIO_ACCOUNT_SID']
             auth_token = os.getev['TWILIO_AUTH_TOKEN']
             client = Client(account_sid, auth_token)
-
-            body = 'Your appointment with {provider} has been scheduled for {time}'
-            message = client.messages.create(
-                                        body=body.format(),
-                                        from_='+15017122661',
-                                        to='+15558675310'
-                                    )
-
-            print('phone call ended, do something')
-            None
+            if os.path.exists('results.json'):
+                with open('results.json') as json_file:
+                    data = json.load(json_file)
+                    body = 'Your appointment with {provider} has been scheduled for {time}'
+                    message = client.messages.create(body=body.format(provider=data[4], time=data[5]),
+                                                from_='+18663434218',
+                                                to=data[7])
+                    print(message.sid)
+                    os.remove('results.json') ## remove after sending
+            else:
+                None
 
