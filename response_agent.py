@@ -117,7 +117,7 @@ class CustomLLMAgent(RespondAgent[ChatGPTAgentConfig]):
         elif info_fulfilled and not self.num_fulfilled in [4,5]: ## requested information is received, we can ask the next prompt  
             response = self.custom_prompts[self.num_fulfilled]
             if self.num_fulfilled == 6:
-                response.format(name=self.fulfilled[4], time=self.fulfilled[5])
+                response = "We've booked your appointment with {name} for {time}. Before you leave, could you provide us your address?".format(name=self.fulfilled[4], time=self.fulfilled[5])
             self.logger.debug("We received the necessary information")
         else:
             response = (
