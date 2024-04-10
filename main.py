@@ -9,11 +9,12 @@ from vocode.streaming.telephony.server.base import (
 )
 from vocode.streaming.models.agent import LLMAgentConfig, ChatGPTAgentConfig
 from vocode.streaming.models.message import BaseMessage
-from vocode.streaming.models.synthesizer import ElevenLabsSynthesizerConfig
-from vocode.streaming.models.transcriber import DeepgramTranscriberConfig, PunctuationEndpointingConfig
+from vocode.streaming.models.synthesizer import ElevenLabsSynthesizerConfig, StreamElementsSynthesizerConfig
+from vocode.streaming.models.transcriber import DeepgramTranscriberConfig, PunctuationEndpointingConfig, TimeEndpointingConfig
 from vocode.streaming.telephony.config_manager.in_memory_config_manager import InMemoryConfigManager
 from event_manager import EventsManager
 from response_agent import CustomLLMAgentFactory
+
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -38,19 +39,21 @@ def get_assistant_instructions():
   with open('instructions.txt', 'r') as file:
     return file.read()
 
-DEEPGRAM_CONFIG = DeepgramTranscriberConfig.from_telephone_input_device(endpointing_config=PunctuationEndpointingConfig(time_cutoff_seconds=1))
+DEEPGRAM_CONFIG = DeepgramTranscriberConfig.from_telephone_input_device(TimeEndpointingConfig(time_cutoff_seconds=3))
 
 AGENT_CONFIG = ChatGPTAgentConfig(
   initial_message=BaseMessage(text="Hello! This is Charlie, an AI assistant to help you book your next appointment. To start, please tell me your name and date of birth"),
   prompt_preamble=get_assistant_instructions(),
   model_type= 'gpt-3.5-turbo-instruct',
-  generate_responses=True,
+  generate_responses=False,
 )
 
-SYNTH_CONFIG = ElevenLabsSynthesizerConfig.from_telephone_output_device(
-  api_key=os.getenv("ELEVEN_LABS_API_KEY"),
-  voice_id = os.getenv("VOICE_ID")
-)
+
+SYNTH_CONFIG = StreamElementsSynthesizerConfig.from_telephone_output_device()
+# SYNTH_CONFIG = ElevenLabsSynthesizerConfig.from_telephone_output_device(
+#   api_key=os.getenv("ELEVEN_LABS_API_KEY"),
+#   voice_id = os.getenv("VOICE_ID")
+# )
 
 telephony_server = TelephonyServer(
     base_url=BASE_URL,
@@ -65,7 +68,7 @@ telephony_server = TelephonyServer(
         )
     ],
     events_manager=EventsManager(),
-    agent_factory= CustomLLMAgentFactory(agent_config=AGENT_CONFIG),
+    agent_factory= CustomLLMAgentFactory(agent_config=AGENT_CONFIG, logger=logger),
     logger=logger,
 )
 

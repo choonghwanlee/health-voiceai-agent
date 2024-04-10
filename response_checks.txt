@@ -1,7 +1,9 @@
-What is the name and date of birth of this speaker? Format your answer in a comma separated string, "(Name), (Date of Birth)". If there is no name or date of birth in the context, respond with the string None for the corresponding element.
-What is the insurance payer name and payer ID of this speaker? Format your answer in a comma separated string, "(Payer Name), (Payer ID)". If there is no payer name or payer ID in the context, respond with the string None for the corresponding element. 
-Which provider does the speaker have a referral to? Format your answer in a string, "(Provider Name)". If the speaker doesn't have a referral, respond with the string "No One".  
-What is the speaker's main reason for visiting? Format your answer in a string "(Main Reason)". 
-What is the speaker's address? Format your answer in a string "(Address)"
-What is the speaker's email or phone number? Format your answer in a string "(Email or phone number)"
-What time does the speaker want an appointment? Format your answer in a string "(Time for Appointment)"
+What is the name and date of birth of the Human? If there is no name or date provided, respond with the string "None".
+What is the name and ID of the Human's insurance payer? If there is no payer name or payer ID provided, respond with the string "None".
+What is the Human's main reason for visiting, or their medical concern? If there is no reason or medical concern provided, respond with the string "None".
+Does the Human have a referral to a provider, and if so, who? If the Human doesn't have a referral, respond with the string "No One".
+Based on the referral and reason for visiting, which provider should the Human see? Respond with "{Provider Name}" of the provider the Huamn would like to see. If you're not sure, respond "None".
+What time does the Human want an appointment with their preferred provider? If there is no available time given, respond with the string "None". 
+What is the Human's personal address? If there is no address in the context, respond with the string "None".
+What is the Human's phone number? If there is no phone number in the context, respond with the string "None".
+Does the Human have any further inquiries or questions? If there are none, respond with the string "None".
