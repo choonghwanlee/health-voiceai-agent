@@ -1,9 +1,9 @@
-What is the name and date of birth of the Human? If there is no name or date provided, respond with the string "None".
-What is the name and ID of the Human's insurance payer? If there is no payer name or payer ID provided, respond with the string "None".
+What is the name and date of birth of the Human? Format your response as "Name:{Name}, DOB:{Date of Birth}". If there is no name or date provided, respond instead with the string "None".
+What is the name and ID of the Human's insurance payer? Format your response as "Payer Name:{Payer Name}, Payer ID:{Payer ID}". If there is no payer name or payer ID provided, respond instead with the string "None".
 What is the Human's main reason for visiting, or their medical concern? If there is no reason or medical concern provided, respond with the string "None".
-Does the Human have a referral to a provider, and if so, who? If the Human doesn't have a referral, respond with the string "No One".
+Does the Human have a referral to a provider, and if so, who? If the Human has a referral, respond with the string "{Referral Name}". If the Human doesn't have a referral, respond with the string "No One".
 Based on the referral and reason for visiting, which provider should the Human see? Respond with "{Provider Name}" of the provider the Huamn would like to see. If you're not sure, respond "None".
-What time does the Human want an appointment with their preferred provider? If there is no available time given, respond with the string "None". 
+What time does the Human want an appointment with their preferred provider? If there is no available time provided, respond with the string "None". 
 What is the Human's personal address? If there is no address in the context, respond with the string "None".
 What is the Human's phone number? If there is no phone number in the context, respond with the string "None".
 Does the Human have any further inquiries or questions? If there are none, respond with the string "Done!" Otherwise, assist the caller to the best of your ability.

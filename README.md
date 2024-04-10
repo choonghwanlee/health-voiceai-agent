@@ -10,9 +10,11 @@ In our project, we use Python, FastAPI (to set up server endpoints), Ngrok (for 
 - Twilio (for telephony & SMS)
 - OpenAI/ChatGPT (for our LLM)
 
+## Explanation of Methodology:
+
 TL;DR: In main.py, we set up an /inbound_call endpoint on our server that routes to a TelephonyServer. In agent_factory.py, we implement a custom LLMRespondAgent that checks user input for each of our call requirements (defined in response_checks.txt), and uses ChatGPT to generate the appropriate Agent response. We also implement an EventManager that triggers a SMS message using Twilio once the call ends (not actually implemented due to regulation issues, but I include the boilerplate code to highlight how it'd function).
 
-Long Explanation:
+### Breakdown:
 
 When seeing this take-home assignment, my first worry was how LLMs can hallucinate and begin veering off track from our conversation. It's also difficult to understand whether all information has been received or not. Given the linear and structured format of the information we need (it's slightly less conversational and more Q&A style), I use a ChatGPT-3.5-Instruct model to determine whether a target question (defined in `response_checks.txt`) has been answered by the human input. If the question has been answered, we store the relevant information in a dictionary dictionary `fulfilled` that keeps track of all key information during the call. This is useful for three reasons. 
 
@@ -25,4 +27,6 @@ If the question is answered, we move on to the next question in `response_checks
 When all key pieces of information are stored, we save the responses to a temporary json file that we use to send a SMS text when the call ends. Theoretically, we'd want to automatically trigger a call end action, but after digging across the source code for Vocode I'm pretty confident that's not available for inbound calls ://
 
 Bulk of my work can be found in the `response_agent.py` file. 
+
+
 

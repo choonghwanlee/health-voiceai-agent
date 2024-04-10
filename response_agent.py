@@ -84,7 +84,7 @@ class CustomLLMAgent(RespondAgent[ChatGPTAgentConfig]):
 
     def create_prompt(self, human_input):
         history = "\n".join(self.memory[-5:]) ## use last 5 entries to memory
-        question = self.response_checks[self.num_fulfilled].split('?')[0] + "?"
+        question = self.response_checks[self.num_fulfilled].split('?')[0] + "?" if self.num_fulfilled < 9 else ""
         return self.prompt_template.format(history=history, template_question= question, human_input=human_input)
 
     def create_check(self, human_input):
@@ -92,7 +92,8 @@ class CustomLLMAgent(RespondAgent[ChatGPTAgentConfig]):
         current_memory = "Human:" + human_input
         history = "\n".join(self.memory[-2:]) + "\n" + current_memory if len(self.memory) > 2 else current_memory
         self.logger.info("History is: %s", history)
-        return self.check_template.format(human_input=history, response_check = self.response_checks[self.num_fulfilled])
+        check = self.response_checks[self.num_fulfilled] if self.num_fulfilled < 9 else ""
+        return self.check_template.format(human_input=history, response_check = check)
 
     def get_memory_entry(self, human_input, response):
         return f"{self.recipient}: {human_input}\n{self.sender}: {response}"
@@ -115,6 +116,8 @@ class CustomLLMAgent(RespondAgent[ChatGPTAgentConfig]):
             response = self.first_response
         elif info_fulfilled and not self.num_fulfilled in [4,5]: ## requested information is received, we can ask the next prompt  
             response = self.custom_prompts[self.num_fulfilled]
+            if self.num_fulfilled == 6:
+                response.format(name=self.fulfilled[4], time=self.fulfilled[5])
             self.logger.debug("We received the necessary information")
         else:
             response = (
@@ -188,12 +191,15 @@ class CustomLLMAgent(RespondAgent[ChatGPTAgentConfig]):
     async def process_human_input(self, human_input) -> bool:
         ## process human input to determine whether information need was fulfilled
         self.logger.debug("Processing human input")
+        if self.num_fulfilled >= 9:
+            return False
         question = self.response_checks[self.num_fulfilled].split("?")[0]
         self.logger.info("Current Question is: %s", question)
+        prompt = self.create_check(human_input) if self.num_fulfilled < 9 else self.create_prompt(human_input)
         response = (
             (
                 await self.llm.agenerate(
-                    [self.create_check(human_input)], stop=self.stop_tokens
+                    [prompt], stop=self.stop_tokens
                 ) ## generate based on history and human input
             )
             .generations[0][0]
@@ -204,16 +210,16 @@ class CustomLLMAgent(RespondAgent[ChatGPTAgentConfig]):
         if "None" in response: ## not all information is collected
             self.logger.debug("Request not fulfilled")
             return False
-        self.logger.debug("Request is fulfilled")
-        self.fulfilled[self.num_fulfilled] = response
-        self.logger.info("Fulfilled Progress: %s", self.fulfilled)
-        self.num_fulfilled += 1
-        self.logger.info("Num Fulfilled: %s", self.num_fulfilled)
-        if self.num_fulfilled == 9:
-            with open('result.json', 'w') as fp:
-                json.dump(self.fulfilled, fp)
-            
-            ## TO-DO: HOW TO SAVE/EXPORT FULFILLED DATA <==
+        if self.num_fulfilled < 9: 
+            self.logger.debug("Request is fulfilled")
+            self.fulfilled[self.num_fulfilled] = response
+            self.logger.info("Fulfilled Progress: %s", self.fulfilled)
+            self.num_fulfilled += 1
+            self.logger.info("Num Fulfilled: %s", self.num_fulfilled)
+            if self.num_fulfilled == 9:
+                with open('result.json', 'w') as fp:
+                    json.dump(self.fulfilled, fp)
+                return False
         return True 
 
     def update_last_bot_message_on_cut_off(self, message: str):
